@@ -1,6 +1,14 @@
 #include "NeuralNetwork.h"
 #include <fstream>
+#include <iostream>
 #include <stdexcept>
+
+Matrix NeuralNetwork::meanSquaredError(const Matrix &y_true,
+                                       const Matrix &y_pred) {
+  Matrix diff = y_true - y_pred;
+  return diff.elementwise(diff) * 0.5;
+}
+
 NeuralNetwork::NeuralNetwork(
     const std::vector<int> &topology,
     const std::vector<Layer::Activation> &activations) {
@@ -70,9 +78,27 @@ void NeuralNetwork::loadWeightsFromFile(const std::string &filepath) {
   file.close();
 }
 
-Matrix NeuralNetwork::predict(Matrix x) const {
+Matrix NeuralNetwork::predict(Matrix x) {
   for (size_t i = 0; i < layers.size(); i++) {
     x = layers[i].forward(x);
   }
   return x;
+}
+Matrix NeuralNetwork::train(Matrix x, Matrix y, double learning_rate,
+                            int epochs) {
+  for (int epoch = 0; epoch < epochs; epoch++) {
+    Matrix prediction = predict(x);
+    Matrix delta = prediction - y;
+    for (int i = layers.size() - 1; i >= 0; i--) {
+      delta = layers[i].backward(delta, learning_rate);
+    }
+    if (epoch % 2000 == 0) {
+      Matrix current_loss = meanSquaredError(y, predict(x));
+      double total = 0.0;
+      for (int i = 0; i < current_loss.getRows(); i++)
+        total += current_loss.getValue(i, 0);
+      std::cout << "Epoch " << epoch << " loss: " << total / current_loss.getRows() << std::endl;
+    }
+  }
+  return meanSquaredError(y, predict(x));
 }

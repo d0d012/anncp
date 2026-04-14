@@ -11,7 +11,9 @@ public:
   Layer &getLayer(int index);
   void setLayer(int index, const Layer &l);
 
-  Matrix predict(Matrix x) const;
+  Matrix predict(Matrix x);
+  Matrix train(Matrix x, Matrix y, double learning_rate, int epochs);
+  Matrix meanSquaredError(const Matrix &y_true, const Matrix &y_pred);
 
   void loadWeightsFromFile(const std::string &filepath);
 
