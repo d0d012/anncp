@@ -1,19 +1,20 @@
-#pragma once 
-#include <vector>
+#pragma once
 #include "Layer.h"
-#include "Matrix.h" 
+#include "Matrix.h"
+#include <vector>
 
 class NeuralNetwork {
 public:
-    NeuralNetwork(const std::vector<int>& topology);
-    
-    Layer& getLayer(int index); 
-    void setLayer(int index, const Layer& l);
-    
-    Matrix predict( Matrix x) const;
+  NeuralNetwork(const std::vector<int> &topology,
+                const std::vector<Layer::Activation> &activations);
 
-    void loadWeightsFromFile(const std::string& filepath);
+  Layer &getLayer(int index);
+  void setLayer(int index, const Layer &l);
+
+  Matrix predict(Matrix x) const;
+
+  void loadWeightsFromFile(const std::string &filepath);
 
 private:
-     std::vector<Layer> layers;
+  std::vector<Layer> layers;
 };
